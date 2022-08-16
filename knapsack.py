@@ -5,33 +5,36 @@ class Knapsack:
         self.weights = weights
         self.capacity = capacity
 
+
     def knapsack_top_down(self):
+        # data structure for memoization
         memo = {}
-        N = len(self.values)
-        C = self.capacity
+        
         # i: ith item, rc: remaining capacity
+        # dp(i, rc): function for subproblem
         def dp(i, rc):
             i_weight = self.weights[i]
             i_val = self.values[i]
 
-            # Base case
+            # base cases
             if i == -1 or rc <= 0:
                 return 0
+                
             if (i, rc) in memo:
                 return memo[(i, rc)]
 
             # DFS section
+            # recurrence relation
             if i_weight > rc:
                 max_val = dp(i-1, rc)
             else:
-                # recurrence relation
                 max_val = max(dp(i-1, rc), dp(i-1, rc-i_weight) + i_val)
 
-            # memoization
             memo[(i, rc)] = max_val
+            
             return max_val
 
-        return dp(N-1, C)
+        return dp(len(self.values)-1, self.capacity)
 
 
     def knapsack_bottom_up_v1(self):
@@ -40,12 +43,13 @@ class Knapsack:
 
         # table
         dp = [[0 for rc in range(C+1)] for i in range(N)]
+
         # filling out the table
         for i in range(0, N):
             i_weight = self.weights[i]
             i_val = self.values[i]
             for rc in range(1, C+1):
-                # # edge case
+                # edge case
                 if i == 0:
                     if i_weight > rc:
                         dp[i][rc] = 0
@@ -79,6 +83,7 @@ class Knapsack:
                 else:
                     dp[rc] = max(prev_dp[rc], prev_dp[rc-i_weight] + i_val)
             prev_dp, dp = dp, prev_dp
+            # clear current row
             for i in range(len(dp)):
                 dp[i] = 0
 
